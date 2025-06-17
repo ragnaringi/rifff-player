@@ -49,6 +49,9 @@ const params = new URLSearchParams(window.location.search);
 if (params.has("rifffUrl")) {
     rifffUrl = params.get("rifffUrl");
 }
+else if (params.has("rifffId")) {
+    rifffUrl = "https://api.endlesss.fm/api/v3/feed/shared_rifff/" + params.get("rifffId");
+}
 if (params.get("showLayers") === "false") {
     document.getElementById("footer").style.opacity = 0;
 }
