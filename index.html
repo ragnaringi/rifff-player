@@ -94,9 +94,9 @@
             <button id="loadBtn">Load</button>
             <div class="note">
                 Copy this iframe code to embed a Rifff Player anywhere on your website. You can customise the
-                <code>rifffUrl</code> parameter to load different rifffs from <a href="https://endlesss.fm"
-                    target="_blank" rel="noopener noreferrer">endlesss.fm</a>. Just replace the URL inside
-                <code>rifffUrl=</code> with any shared rifff you want to showcase.
+                <code>rifffId</code> parameter to load different rifffs from <a href="https://endlesss.fm"
+                    target="_blank" rel="noopener noreferrer">endlesss.fm</a>.
+                Just replace the ID inside <code>rifffId=</code> with any shared rifff ID you want to showcase.
             </div>
         </div>
     </div>
@@ -119,7 +119,7 @@
         const rifffId = Math.random() < 0.5 ? "41510a10435311ed8a10405df04d7516" : "3052b5302ef411f0b5306449625d4a9f";
         const rifffUrl = `https://api.endlesss.fm/api/v3/feed/shared_rifff/${rifffId}`;
 
-        const defaultSrc = `${basePath}/embed.html?rifffUrl=${rifffUrl}&showLayers=true&showSettings=true`;
+        const defaultSrc = `${basePath}/embed.html?rifffId=${rifffId}&showLayers=true&showSettings=true`;
 
         const textarea = document.getElementById('iframeHtml');
         const button = document.getElementById('loadBtn');
