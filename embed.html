@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en" style="--hue: 182.52299156986524;">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rifff Player</title>
+    <link rel="stylesheet" href="css/embed.css" />
+</head>
+
+<body>
+    <div class="square">
+        <div class="container flip-container" id="flipper">
+            <div class="container flip-card">
+                <div class="front">
+                    <img id="cover-image" alt="Rifff Image"></img>
+                    <div id="inner-container">
+                        <div id="header">
+                            <img id="shared-by-avatar" class="avatar" alt="Rifff Image"></img>
+                            <div style="display: flex; flex-direction: column;">
+                                <h4 id="rifff-title">Rifff Name</h4>
+                                <h6 id="rifff-creators"></h6>
+                            </div>
+                            <div style="flex-grow:1"></div>
+                            <button class="icon-button" id="settings-button" onclick="flip()">
+                                <img src="icons/sliders.svg" alt="Settings Icon" id="icon-image" />
+                            </button>
+                        </div>
+                        <div id="canvas-container">
+                            <canvas id="waveform"></canvas>
+                        </div>
+                        <div id="footer">
+                            <button class="toggle-btn" id="mute-button-0"></button>
+                            <button class="toggle-btn" id="mute-button-1"></button>
+                            <button class="toggle-btn" id="mute-button-2"></button>
+                            <button class="toggle-btn" id="mute-button-3"></button>
+                            <button class="toggle-btn" id="mute-button-4"></button>
+                            <button class="toggle-btn" id="mute-button-5"></button>
+                            <button class="toggle-btn" id="mute-button-6"></button>
+                            <button class="toggle-btn" id="mute-button-7"></button>
+                        </div>
+                    </div>
+                    <button id="play-pause-btn" aria-label="Play/Pause">
+                        <img id="play-icon" src="icons/play-fill.svg" alt="Play Icon">
+                        <img id="pause-icon" src="icons/pause-fill.svg" alt="Pause Icon" style="display: none;">
+                    </button>
+                </div>
+                <div class="back">
+                    <div id="inner-container">
+                        <div id="header">
+                            <div style="display: flex; flex-direction: column;">
+                                <h4 id="rifff-title">Settings</h4>
+                                <h6 id="rifff-creators"></h6>
+                            </div>
+                            <div style="flex-grow:1"></div>
+                            <button class="icon-button" onclick="flip()">
+                                <img src="icons/x.svg" alt="Close Icon" class="icon-image" />
+                            </button>
+                        </div>
+                        <div id="settings-sliders">
+                            <div class="settings-slider">
+                                <label for="playback-speed">Playback Speed</label>
+                                <input type="range" name="speed" id="playback-speed" min="0" max="3" step="0.01" value="1"/>
+                            </div>
+                            <div class="settings-slider">
+                                <label for="output-level">Output Level</label>
+                                <input type="range" name="level" id="output-level" min="0" max="2" step="0.01" value="1"/>
+                            </div>
+                        </div>
+                        <div style="flex-grow: 1;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        function flip() {
+          document.getElementById('flipper').classList.toggle('flipped');
+        }
+    </script>
+</body>
+
+<script src="./embed.js" type="module"></script>
+
+</html>

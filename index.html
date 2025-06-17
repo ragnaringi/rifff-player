@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rifff Embed Demo</title>
+    <style>
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+            font-family: sans-serif;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            text-align: center;
+        }
+
+        .controls {
+            width: 60vmin;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        textarea {
+            width: 100%;
+            height: 6rem;
+            resize: vertical;
+            padding: 0.75rem;
+            font-size: 0.9rem;
+            font-family: monospace;
+            box-sizing: border-box;
+        }
+
+        .button-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+        button {
+            padding: 0.5rem 1rem;
+            font-size: 1rem;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .note {
+            flex: 1;
+            font-size: 0.85rem;
+            color: #555;
+            user-select: none;
+            line-height: 1.3;
+            font-style: italic;
+        }
+
+        .iframe-wrapper {
+            width: 60vmin;
+            aspect-ratio: 1 / 1;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            flex-shrink: 0;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Rifff Embed Demo</h1>
+
+    <div class="controls">
+        <textarea
+            id="iframeHtml">&lt;iframe src="embed.html?rifffUrl=https://api.endlesss.fm/api/v3/feed/shared_rifff/3052b5302ef411f0b5306449625d4a9f&amp;showLayers=true&amp;showSettings=true" title="Rifff Player"&gt;&lt;/iframe&gt;</textarea>
+
+        <div class="button-row">
+            <button id="loadBtn">Load</button>
+            <div class="note">
+                Copy this iframe code to embed a Rifff Player anywhere on your website. You can customise the
+                <code>rifffUrl</code> parameter to load different rifffs from <a href="https://endlesss.fm"
+                    target="_blank" rel="noopener noreferrer">endlesss.fm</a>. Just replace the URL inside
+                <code>rifffUrl=</code> with any shared rifff you want to showcase.
+            </div>
+        </div>
+    </div>
+
+    <div class="iframe-wrapper">
+        <iframe id="preview" title="Rifff Player">
+        </iframe>
+    </div>
+
+    <script>
+        const githubUser = 'ragnaringi';
+        const githubRepo = 'rifff-player';
+
+        const isGitHubPages = location.hostname === `${githubUser}.github.io` || location.hostname.endsWith('.github.io');
+
+        const basePath = isGitHubPages
+            ? `https://${githubUser}.github.io/${githubRepo}`
+            : '.';
+
+        const rifffUrl = "https://api.endlesss.fm/api/v3/feed/shared_rifff/3052b5302ef411f0b5306449625d4a9f";
+
+        const defaultSrc = `${basePath}/embed.html?rifffUrl=${rifffUrl}&showLayers=true&showSettings=true`;
+
+        const textarea = document.getElementById('iframeHtml');
+        const button = document.getElementById('loadBtn');
+        const iframe = document.getElementById('preview');
+
+        textarea.value = `<iframe src="${defaultSrc}" title="Rifff Player"></iframe>`;
+        iframe.src = defaultSrc;
+
+        button.addEventListener('click', () => {
+            const rawHtml = textarea.value;
+            const temp = document.createElement('div');
+            temp.innerHTML = rawHtml.trim();
+            const newIframe = temp.querySelector('iframe');
+
+            if (newIframe && newIframe.src) {
+                iframe.src = newIframe.src;
+                iframe.title = newIframe.title || 'Rifff Player';
+            } else {
+                alert('Invalid iframe HTML');
+            }
+        });
+    </script>
+</body>
+
+</html>
