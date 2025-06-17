@@ -10,6 +10,11 @@
 </head>
 
 <body>
+    <div id="safari-warning"
+        style="display:none; padding:1rem; background:#ffdddd; color:#a00; text-align:center; font-weight:bold;">
+        ⚠️ Safari does not support the OGG/FLAC audio formats used here. Please use Chrome,
+        Firefox, Edge, or Brave.
+    </div>
     <div class="square">
         <div class="container flip-container" id="flipper">
             <div class="container flip-card">
@@ -19,7 +24,7 @@
                         <div id="header">
                             <img id="shared-by-avatar" class="avatar" alt="Rifff Image"></img>
                             <div style="display: flex; flex-direction: column;">
-                                <h4 id="rifff-title">Rifff Name</h4>
+                                <h4 id="rifff-title"></h4>
                                 <h6 id="rifff-creators"></h6>
                             </div>
                             <div style="flex-grow:1"></div>
@@ -61,11 +66,13 @@
                         <div id="settings-sliders">
                             <div class="settings-slider">
                                 <label for="playback-speed">Playback Speed</label>
-                                <input type="range" name="speed" id="playback-speed" min="0" max="3" step="0.01" value="1"/>
+                                <input type="range" name="speed" id="playback-speed" min="0" max="3" step="0.01"
+                                    value="1" />
                             </div>
                             <div class="settings-slider">
                                 <label for="output-level">Output Level</label>
-                                <input type="range" name="level" id="output-level" min="0" max="2" step="0.01" value="1"/>
+                                <input type="range" name="level" id="output-level" min="0" max="2" step="0.01"
+                                    value="1" />
                             </div>
                         </div>
                         <div style="flex-grow: 1;"></div>
@@ -74,11 +81,32 @@
             </div>
         </div>
     </div>
+
     <script>
         function flip() {
-          document.getElementById('flipper').classList.toggle('flipped');
+            document.getElementById('flipper').classList.toggle('flipped');
         }
     </script>
+    <script>
+        function flip() {
+            document.getElementById('flipper').classList.toggle('flipped');
+        }
+    </script>
+    <script>
+        // Safari detection logic
+        function isSafari() {
+            const ua = navigator.userAgent;
+            return /^((?!chrome|android).)*safari/i.test(ua);
+        }
+
+        if (isSafari()) {
+            // Hide the main player
+            document.querySelector('.square').style.display = 'none';
+            // Show warning
+            document.getElementById('safari-warning').style.display = 'block';
+        }
+    </script>
+
 </body>
 
 <script src="./embed.js" type="module"></script>
