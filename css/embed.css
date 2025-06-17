@@ -73,8 +73,10 @@ body.dark {
 .avatar {
     max-height: 40px;
     aspect-ratio: 1;
-    border: black solid 2px;
+    border: #ff6600 solid 1px;
     border-radius: 50%;
+    object-fit: cover;
+    display: block;
 }
 
 #cover-image {

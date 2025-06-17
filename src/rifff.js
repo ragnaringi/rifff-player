@@ -18,6 +18,11 @@ export const getSlotForLoop = (rifff, loop) => {
     });
 };
 
+export const getUserImageUrl = (sharedRifff) => {
+    const cdnUrl = "https://endlesss.ams3.digitaloceanspaces.com/attachments/avatars";
+    return cdnUrl + "/" + sharedRifff.user;
+};
+
 export const getLayerColours = (rifff) => {
     return rifff.layerColours.map((colour) => {
         let str = "#" + colour.substring(2, colour.length);

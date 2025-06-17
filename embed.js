@@ -16,7 +16,7 @@ import {
     outputLevel,
     setOutputLevel,
 } from "./src/playback.js";
-import { getLayerColours, getRifffWaveform } from "./src/rifff.js";
+import { getLayerColours, getRifffWaveform, getUserImageUrl } from "./src/rifff.js";
 import { makeToggleButton } from "./src/ui-helpers.js";
 
 // Set up the analyser
@@ -113,10 +113,8 @@ fetchRifffData(rifffUrl)
             prev && prev.duration > current.duration ? prev : current
         );
 
-        rifffCoverImg.src = sharedRifff.image_url;
-        rifffSharedByImg.src =
-            "https://endlesss.ams3.digitaloceanspaces.com/attachments/avatars/" +
-            sharedRifff.user;
+        setImageSrc(rifffCoverImg, sharedRifff.image_url);
+        setImageSrc(rifffSharedByImg, getUserImageUrl(sharedRifff));
         rifffTitle.textContent = sharedRifff.title;
         rifffCreatorLinks.innerHTML = sharedRifff.creators
             .map((user) => `<a href="https://endlesss.fm/${user}" target="_blank">${user}</a>`)
@@ -167,3 +165,11 @@ fetchRifffData(rifffUrl)
 
         animate();
     });
+
+    const setImageSrc = (img, src) => {
+        img.onload = () => {
+            img.style.display = 'block';
+        };
+        img.src = src;
+    }
+
