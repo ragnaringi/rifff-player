@@ -118,7 +118,8 @@
             ? `https://${githubUser}.github.io/${githubRepo}`
             : '.';
 
-        const rifffUrl = "https://api.endlesss.fm/api/v3/feed/shared_rifff/3052b5302ef411f0b5306449625d4a9f";
+        const rifffId = Math.random() < 0.5 ? "41510a10435311ed8a10405df04d7516" : "3052b5302ef411f0b5306449625d4a9f";
+        const rifffUrl = `https://api.endlesss.fm/api/v3/feed/shared_rifff/${rifffId}`;
 
         const defaultSrc = `${basePath}/embed.html?rifffUrl=${rifffUrl}&showLayers=true&showSettings=true`;
 
