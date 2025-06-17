@@ -119,7 +119,7 @@ fetchRifffData(rifffUrl)
             sharedRifff.user;
         rifffTitle.textContent = sharedRifff.title;
         rifffCreatorLinks.innerHTML = sharedRifff.creators
-            .map((user) => `<a href="https://endlesss.fm/${user}">${user}</a>`)
+            .map((user) => `<a href="https://endlesss.fm/${user}" target="_blank">${user}</a>`)
             .join(", ");
 
         const layerColours = getLayerColours(sharedRifff.rifff);
