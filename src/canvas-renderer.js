@@ -5,7 +5,6 @@ export const canvasRenderer = (canvas, drawFn) => {
     const resize = () => {
         const logicalWidth = canvas.clientWidth;
         const logicalHeight = canvas.clientHeight;
-        console.log("Canvas size:", canvas.clientWidth, canvas.clientHeight);
 
         if (logicalWidth === 0 || logicalHeight === 0) return; // skip if layout not ready
 
