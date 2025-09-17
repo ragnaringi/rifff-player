@@ -10,11 +10,6 @@
 </head>
 
 <body>
-    <div id="safari-warning"
-        style="display:none; padding:1rem; background:#ffdddd; color:#a00; text-align:center; font-weight:bold;">
-        ⚠️ Safari does not support the OGG/FLAC audio formats used here. Please use Chrome,
-        Firefox, Edge, or Brave.
-    </div>
     <div class="square">
         <div class="container flip-container" id="flipper">
             <div class="container flip-card">
@@ -92,23 +87,9 @@
             document.getElementById('flipper').classList.toggle('flipped');
         }
     </script>
-    <script>
-        // Safari detection logic
-        function isSafari() {
-            const ua = navigator.userAgent;
-            return /^((?!chrome|android).)*safari/i.test(ua);
-        }
-
-        if (isSafari()) {
-            // Hide the main player
-            document.querySelector('.square').style.display = 'none';
-            // Show warning
-            document.getElementById('safari-warning').style.display = 'block';
-        }
-    </script>
-
 </body>
 
+<script src="./src/ogg-vorbis-decoder.min.js"></script>
 <script src="./embed.js" type="module"></script>
 
 </html>

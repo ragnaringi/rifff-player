@@ -1,12 +1,13 @@
 import { canvasRenderer } from './src/canvas-renderer.js';
 import { drawRifffSplat } from "./src/rifff-splat.js";
-import { fetchRifffData, createPlayers } from "./src/loader.js";
+import { fetchRifffData } from "./src/loader.js";
 import {
     audioContext,
     summingNode,
     sharedRifff,
     setCurrentRifff,
     fetchAudio,
+    createPlayers,
     initialisePlayers,
     setRelativePlaybackRate,
     togglePlayback,
