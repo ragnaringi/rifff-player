@@ -84,7 +84,7 @@ export default class LooperNode {
     }
 
     get loopStart() {
-        return this._bufferSource.loopEnd;
+        return this._bufferSource.loopStart;
     }
 
     set loopStart(loopStartSeconds) {
