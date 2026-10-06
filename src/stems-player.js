@@ -42,21 +42,6 @@ export class StemsPlayer {
             throw new Error("Cannot add a stem without an AudioBuffer.");
         }
 
-        const player = new LooperNode(this.context);
-        player.buffer = buffer;
-        player.loop = loop;
-        player.loopStart = loopStart;
-        player.loopEnd = loopEnd;
-        player.playbackRate = playbackRate;
-        player.gain = gain;
-        player.muted = muted;
-
-        const analyser = this.context.createAnalyser();
-        analyser.fftSize = this.analysisBufferSize;
-
-        player.connect(analyser);
-        player.connect(this.output);
-
         const stem = {
             buffer,
             gain,
@@ -68,11 +53,60 @@ export class StemsPlayer {
         };
 
         this.stems.push(stem);
-        this.players.push(player);
-        this.analyserNodes.push(analyser);
         this.basePlaybackRates.push(playbackRate);
 
+        return this._createPlayerForStem(stem);
+    }
+
+    _createPlayerForStem(stem) {
+        const player = new LooperNode(this.context);
+        player.buffer = stem.buffer;
+        player.loop = stem.loop;
+        player.loopStart = stem.loopStart;
+        player.loopEnd = stem.loopEnd;
+        player.playbackRate = stem.playbackRate * this.relativePlaybackRate;
+        player.gain = stem.gain;
+        player.muted = stem.muted;
+
+        const analyser = this.context.createAnalyser();
+        analyser.fftSize = this.analysisBufferSize;
+
+        player.connect(analyser);
+        player.connect(this.output);
+
+        this.players.push(player);
+        this.analyserNodes.push(analyser);
+
         return player;
+    }
+
+    _disconnectPlayers() {
+        for (const player of this.players) {
+            try {
+                player.disconnect();
+            } catch {
+                // Ignore nodes that are already disconnected.
+            }
+        }
+    }
+
+    _stopPlayers(when) {
+        for (const player of this.players) {
+            try {
+                player.stop(when);
+            } catch {
+                // Ignore nodes that were never started or have already stopped.
+            }
+        }
+    }
+
+    _rebuildPlayers() {
+        this._disconnectPlayers();
+
+        this.players = [];
+        this.analyserNodes = [];
+
+        this.stems.forEach((stem) => this._createPlayerForStem(stem));
     }
 
     connect(destination, ...args) {
@@ -120,10 +154,10 @@ export class StemsPlayer {
         return this.isPlaying;
     }
 
-    stop(when) {
-        for (const player of this.players) {
-            player.stop(when);
-        }
+    stop() {
+        const now = this.context.currentTime;
+        this._stopPlayers(now);
+        this._rebuildPlayers();
 
         this.isPlaying = false;
         this.output.gain.value = 0;

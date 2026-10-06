@@ -148,4 +148,8 @@ export default class LooperNode {
     connect(...args) {
         this._gainNode.connect(...args);
     }
+
+    disconnect(...args) {
+        this._gainNode.disconnect(...args);
+    }
 }
