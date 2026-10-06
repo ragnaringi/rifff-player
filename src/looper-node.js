@@ -6,8 +6,14 @@
 // It extends AudioBufferSourceNode with a `playbackPosition` property
 // to provide accurate tracking of playback position.
 
+const DEFAULT_GAIN_RAMP_TIME_SECONDS = 0.02;
+const DEFAULT_PLAYBACK_RATE_RAMP_TIME_SECONDS = 0.03;
+
 export default class LooperNode {
-    constructor(context) {
+    constructor(context, {
+        gainRampTime = DEFAULT_GAIN_RAMP_TIME_SECONDS,
+        playbackRateRampTime = DEFAULT_PLAYBACK_RATE_RAMP_TIME_SECONDS,
+    } = {}) {
         this.context = context;
 
         // initialize component audio nodes
@@ -17,8 +23,11 @@ export default class LooperNode {
         this._out = new ChannelMergerNode(context);
         this._sampleHolder = new Float32Array(1);
         this._playbackRate = 1.0;
+        this._gain = 1.0;
         this._paused = false;
         this._muted = false;
+        this._gainRampTime = gainRampTime;
+        this._playbackRateRampTime = playbackRateRampTime;
     }
 
     // get current progress between 0 and 1
@@ -105,8 +114,16 @@ export default class LooperNode {
 
     set playbackRate(newRate) {
         this._playbackRate = newRate;
-        const adjustedRate = newRate * !this._paused;
-        this._bufferSource.playbackRate.value = adjustedRate;
+        this._setPlaybackRate(newRate * !this._paused);
+    }
+
+    _setPlaybackRate(newRate) {
+        const now = this.context.currentTime;
+        const playbackRate = this._bufferSource.playbackRate;
+
+        playbackRate.cancelScheduledValues(now);
+        playbackRate.setValueAtTime(playbackRate.value, now);
+        playbackRate.linearRampToValueAtTime(newRate, now + this._playbackRateRampTime);
     }
 
     get gain() {
@@ -115,7 +132,16 @@ export default class LooperNode {
 
     set gain(newGain) {
         this._gain = newGain;
-        this._gainNode.gain.value = newGain * !this.muted;
+        this._setOutputGain(newGain * !this.muted);
+    }
+
+    _setOutputGain(newGain) {
+        const now = this.context.currentTime;
+        const gain = this._gainNode.gain;
+
+        gain.cancelScheduledValues(now);
+        gain.setValueAtTime(gain.value, now);
+        gain.linearRampToValueAtTime(newGain, now + this._gainRampTime);
     }
 
     get muted() {
@@ -124,13 +150,13 @@ export default class LooperNode {
 
     set muted(shouldMute) {
         this._muted = shouldMute;
-        this.gain = this.gain;
+        this._setOutputGain(this.gain * !this.muted);
     }
 
     start(...args) {
         if (this._paused) {
             this._paused = false;
-            this.playbackRate = this.playbackRate;
+            this._setPlaybackRate(this.playbackRate);
         } else {
             this._bufferSource.start(...args);
         }
@@ -138,7 +164,7 @@ export default class LooperNode {
 
     pause() {
         this._paused = true;
-        this.playbackRate = this.playbackRate;
+        this._setPlaybackRate(0);
     }
 
     stop(...args) {
