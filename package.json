@@ -1,0 +1,31 @@
+{
+  "name": "rifff-player",
+  "version": "0.1.0",
+  "description": "Reusable Web Audio player for Endlesss Rifffs",
+  "type": "module",
+  "main": "./src/index.js",
+  "module": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./looper": "./src/looper-node.js",
+    "./stems": "./src/stems-player.js",
+    "./rifff": "./src/rifff-player.js"
+  },
+  "files": [
+    "src",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "check": "node --check src/index.js && node --check src/looper-node.js && node --check src/stems-player.js && node --check src/rifff-player.js && node --check src/loader.js && node --check src/rifff.js"
+  },
+  "keywords": [
+    "web-audio",
+    "audio",
+    "loops",
+    "stems",
+    "rifff",
+    "endlesss"
+  ],
+  "license": "MIT"
+}
