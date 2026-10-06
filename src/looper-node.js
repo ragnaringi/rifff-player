@@ -28,6 +28,7 @@ export default class LooperNode {
         this._muted = false;
         this._gainRampTime = gainRampTime;
         this._playbackRateRampTime = playbackRateRampTime;
+        this._started = false;
     }
 
     // get current progress between 0 and 1
@@ -114,16 +115,16 @@ export default class LooperNode {
 
     set playbackRate(newRate) {
         this._playbackRate = newRate;
-        this._setPlaybackRate(newRate * !this._paused);
+        this.rampPlaybackRateTo(newRate * !this._paused, this._playbackRateRampTime);
     }
 
-    _setPlaybackRate(newRate) {
+    rampPlaybackRateTo(newRate, rampTime = this._playbackRateRampTime) {
         const now = this.context.currentTime;
         const playbackRate = this._bufferSource.playbackRate;
 
         playbackRate.cancelScheduledValues(now);
         playbackRate.setValueAtTime(playbackRate.value, now);
-        playbackRate.linearRampToValueAtTime(newRate, now + this._playbackRateRampTime);
+        playbackRate.linearRampToValueAtTime(newRate, now + rampTime);
     }
 
     get gain() {
@@ -132,16 +133,16 @@ export default class LooperNode {
 
     set gain(newGain) {
         this._gain = newGain;
-        this._setOutputGain(newGain * !this.muted);
+        this.rampOutputGainTo(newGain * !this.muted, this._gainRampTime);
     }
 
-    _setOutputGain(newGain) {
+    rampOutputGainTo(newGain, rampTime = this._gainRampTime) {
         const now = this.context.currentTime;
         const gain = this._gainNode.gain;
 
         gain.cancelScheduledValues(now);
         gain.setValueAtTime(gain.value, now);
-        gain.linearRampToValueAtTime(newGain, now + this._gainRampTime);
+        gain.linearRampToValueAtTime(newGain, now + rampTime);
     }
 
     get muted() {
@@ -150,21 +151,31 @@ export default class LooperNode {
 
     set muted(shouldMute) {
         this._muted = shouldMute;
-        this._setOutputGain(this.gain * !this.muted);
+        this.rampOutputGainTo(this.gain * !this.muted, this._gainRampTime);
     }
 
     start(...args) {
         if (this._paused) {
             this._paused = false;
-            this._setPlaybackRate(this.playbackRate);
-        } else {
+            this.rampPlaybackRateTo(this.playbackRate, this._playbackRateRampTime);
+        } else if (!this._started) {
+            this._started = true;
             this._bufferSource.start(...args);
         }
     }
 
-    pause() {
+    pause({
+              rampTime = this._playbackRateRampTime,
+          } = {}) {
         this._paused = true;
-        this._setPlaybackRate(0);
+        this.rampPlaybackRateTo(0, rampTime);
+    }
+
+    resume({
+               rampTime = this._playbackRateRampTime,
+           } = {}) {
+        this._paused = false;
+        this.rampPlaybackRateTo(this.playbackRate, rampTime);
     }
 
     stop(...args) {

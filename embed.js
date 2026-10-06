@@ -75,6 +75,17 @@ const updatePlayButton = (isPlaying) => {
 
 const floatOfEvent = (event) => parseFloat(event.target.value);
 
+const booleanParam = (name, defaultValue = false) => {
+    if (!params.has(name)) {
+        return defaultValue;
+    }
+
+    return params.get(name) === "true";
+};
+
+const tapeStartEnabled = booleanParam("tapeStart", false);
+const tapeStopEnabled = booleanParam("tapeStop", false);
+
 fetchRifffData(rifffUrl)
     .then(async (sharedRifff) => {
         const player = await RifffPlayer.fromSharedRifff(audioContext, sharedRifff);
@@ -106,10 +117,21 @@ fetchRifffData(rifffUrl)
             player.setOutputLevel(floatOfEvent(event));
         });
 
+        let hasPlayedOnce = false;
+
         playButton?.addEventListener("click", async () => {
             await audioContext.resume();
 
-            const isPlaying = player.toggle();
+            const wasPlaying = player.isPlaying;
+            const isPlaying = player.toggle({
+                tapeStart: tapeStartEnabled && hasPlayedOnce,
+                tapeStop: tapeStopEnabled,
+            });
+
+            if (!wasPlaying && isPlaying) {
+                hasPlayedOnce = true;
+            }
+
             updatePlayButton(isPlaying);
         });
 

@@ -2,6 +2,9 @@ import LooperNode from "./looper-node.js";
 
 const DEFAULT_ANALYSIS_BUFFER_SIZE = 256;
 const DEFAULT_FADE_TIME_SECONDS = 0.1;
+const DEFAULT_PARAMETER_RAMP_TIME_SECONDS = 0.02;
+const DEFAULT_TAPE_STOP_TIME_SECONDS = 1.0;
+const DEFAULT_TAPE_START_TIME_SECONDS = 0.6;
 
 export class StemsPlayer {
     constructor(context, {
@@ -9,6 +12,9 @@ export class StemsPlayer {
         outputLevel = 0.75,
         analysisBufferSize = DEFAULT_ANALYSIS_BUFFER_SIZE,
         fadeTime = DEFAULT_FADE_TIME_SECONDS,
+        parameterRampTime = DEFAULT_PARAMETER_RAMP_TIME_SECONDS,
+        tapeStopTime = DEFAULT_TAPE_STOP_TIME_SECONDS,
+        tapeStartTime = DEFAULT_TAPE_START_TIME_SECONDS,
     } = {}) {
         this.context = context;
         this.output = context.createGain();
@@ -16,6 +22,9 @@ export class StemsPlayer {
 
         this.outputLevel = outputLevel;
         this.fadeTime = fadeTime;
+        this.parameterRampTime = parameterRampTime;
+        this.tapeStopTime = tapeStopTime;
+        this.tapeStartTime = tapeStartTime;
         this.isPlaying = false;
         this.relativePlaybackRate = 1;
         this.analysisBufferSize = analysisBufferSize;
@@ -59,7 +68,10 @@ export class StemsPlayer {
     }
 
     _createPlayerForStem(stem) {
-        const player = new LooperNode(this.context);
+        const player = new LooperNode(this.context, {
+            gainRampTime: this.parameterRampTime,
+            playbackRateRampTime: this.parameterRampTime,
+        });
         player.buffer = stem.buffer;
         player.loop = stem.loop;
         player.loopStart = stem.loopStart;
@@ -118,37 +130,48 @@ export class StemsPlayer {
         this.output.disconnect(...args);
     }
 
-    play(when) {
+    play({
+             tapeStart = false,
+         } = {}) {
         if (this.isPlaying) {
             return;
         }
 
         for (const player of this.players) {
-            player.start(when);
+            player.start();
+
+            if (tapeStart) {
+                player.rampPlaybackRateTo(0, 0);
+                player.resume({ rampTime: this.tapeStartTime });
+            }
         }
 
         this.isPlaying = true;
-        this.fadeTo(this.outputLevel);
+        this.fadeTo(this.outputLevel, tapeStart ? this.tapeStartTime : this.fadeTime);
     }
 
-    pause() {
+    pause({
+              tapeStop = false,
+          } = {}) {
         if (!this.isPlaying) {
             return;
         }
 
+        const rampTime = tapeStop ? this.tapeStopTime : this.parameterRampTime;
+
         for (const player of this.players) {
-            player.pause();
+            player.pause({ rampTime });
         }
 
         this.isPlaying = false;
-        this.fadeTo(0);
+        this.fadeTo(0, tapeStop ? this.tapeStopTime : this.fadeTime);
     }
 
-    toggle() {
+    toggle(options = {}) {
         if (this.isPlaying) {
-            this.pause();
+            this.pause(options);
         } else {
-            this.play();
+            this.play(options);
         }
 
         return this.isPlaying;
@@ -163,18 +186,18 @@ export class StemsPlayer {
         this.output.gain.value = 0;
     }
 
-    fadeTo(gain) {
+    fadeTo(gain, rampTime = this.fadeTime) {
         const now = this.context.currentTime;
         this.output.gain.cancelScheduledValues(now);
         this.output.gain.setValueAtTime(this.output.gain.value, now);
-        this.output.gain.linearRampToValueAtTime(gain, now + this.fadeTime);
+        this.output.gain.linearRampToValueAtTime(gain, now + rampTime);
     }
 
     setOutputLevel(level) {
         this.outputLevel = level;
 
         if (this.isPlaying) {
-            this.output.gain.value = level;
+            this.fadeTo(level, this.parameterRampTime);
         }
     }
 
