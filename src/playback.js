@@ -1,12 +1,13 @@
-import { audioContext, loadAudioBuffers } from "../src/loader.js";
+import { loadAudioBuffers } from "../src/loader.js";
 import { getAudioUrls, getSlotForLoop } from "../src/rifff.js";
 import LooperNode from "./looper-node.js";
 
-const summingNode = audioContext.createGain();
+export const audioContext = new AudioContext();
+
+export const summingNode = audioContext.createGain();
 summingNode.connect(audioContext.destination);
 summingNode.gain.value = 0;
 
-export { audioContext, summingNode };
 export let sharedRifff = undefined;
 export let isPlaying = false;
 export let loopPlayers = [];
@@ -75,7 +76,7 @@ export const initialisePlayers = (players) => {
 
 export const fetchAudio = async (sharedRifff) => {
     const fileUrls = getAudioUrls(sharedRifff);
-    return loadAudioBuffers(fileUrls);
+    return loadAudioBuffers(audioContext, fileUrls);
 };
 
 export const setRelativePlaybackRate = (rate) => {

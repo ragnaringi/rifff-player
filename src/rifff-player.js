@@ -5,7 +5,7 @@ import { StemsPlayer } from "./stems-player.js";
 export class RifffPlayer extends StemsPlayer {
     static async fromSharedRifff(context, sharedRifff, options = {}) {
         const audioUrls = getAudioUrls(sharedRifff);
-        const audioBuffers = await loadAudioBuffers(audioUrls);
+        const audioBuffers = await loadAudioBuffers(context, audioUrls);
 
         return new RifffPlayer(context, sharedRifff, audioBuffers, options);
     }
