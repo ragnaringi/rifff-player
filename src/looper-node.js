@@ -37,6 +37,23 @@ export default class LooperNode {
         return this._sampleHolder[0];
     }
 
+    // get current progress through the active loop region between 0 and 1
+    get loopPlaybackPosition() {
+        const rawPosition = this.playbackPosition;
+        const rawSeconds = rawPosition * this.duration;
+        const loopStart = this.loopStart;
+        const loopEnd = this.loopEnd || this.duration;
+        const loopDuration = loopEnd - loopStart;
+
+        if (!Number.isFinite(loopDuration) || loopDuration <= 0) {
+            return 0;
+        }
+
+        const loopPosition = (rawSeconds - loopStart) / loopDuration;
+
+        return ((loopPosition % 1) + 1) % 1;
+    }
+
     get duration() {
         return this._bufferSource.buffer.duration;
     }

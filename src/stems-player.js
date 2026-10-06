@@ -34,6 +34,7 @@ export class StemsPlayer {
         this.players = [];
         this.analyserNodes = [];
         this.basePlaybackRates = [];
+        this._referenceStemIndex = 0;
 
         stems.forEach((stem) => this.addStem(stem));
     }
@@ -63,6 +64,7 @@ export class StemsPlayer {
 
         this.stems.push(stem);
         this.basePlaybackRates.push(playbackRate);
+        this._updateReferenceStemIndex();
 
         return this._createPlayerForStem(stem);
     }
@@ -250,13 +252,52 @@ export class StemsPlayer {
         return Math.sqrt(sumSquares / this.analysisBuffer.length);
     }
 
-    getPlaybackPosition(index = 0) {
+    getStemLoopDuration(index) {
+        const stem = this.stems[index];
+
+        if (!stem) {
+            return 0;
+        }
+
+        return Math.max(0, stem.loopEnd - stem.loopStart);
+    }
+
+    _updateReferenceStemIndex() {
+        if (this.stems.length === 0) {
+            this._referenceStemIndex = 0;
+            return;
+        }
+
+        this._referenceStemIndex = this.stems.reduce((longestIndex, stem, index) => {
+            return this.getStemLoopDuration(index) > this.getStemLoopDuration(longestIndex)
+                ? index
+                : longestIndex;
+        }, 0);
+    }
+
+    get referenceStemIndex() {
+        return this._referenceStemIndex;
+    }
+
+    setReferenceStemIndex(index) {
+        if (!this.stems[index]) {
+            throw new RangeError(`No stem exists at index ${index}.`);
+        }
+
+        this._referenceStemIndex = index;
+    }
+
+    getPlaybackPosition(index = this.referenceStemIndex) {
+        return this.players[index]?.loopPlaybackPosition ?? 0;
+    }
+
+    getRawPlaybackPosition(index = this.referenceStemIndex) {
         return this.players[index]?.playbackPosition ?? 0;
     }
 
     get duration() {
-        return this.players.reduce((longest, player) => {
-            return Math.max(longest, player.duration);
+        return this.stems.reduce((longest, stem, index) => {
+            return Math.max(longest, this.getStemLoopDuration(index));
         }, 0);
     }
 }
