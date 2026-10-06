@@ -1,12 +1,20 @@
 
 // Only initialize the Ogg decoder once
 const isOggSupported = (() => {
+    if (typeof document === "undefined") {
+        return false;
+    }
+
     const audio = document.createElement("audio");
     return audio.canPlayType("audio/ogg; codecs=vorbis") !== "";
 })();
 
 // Decode a raw Ogg Vorbis file
 async function decodeOggVorbis(context, arrayBuffer) {
+    if (typeof window === "undefined" || !window["ogg-vorbis-decoder"]) {
+        throw new Error("Ogg Vorbis decoding is not available in this environment.");
+    }
+
     const { OggVorbisDecoderWebWorker } = window["ogg-vorbis-decoder"];
     const decoder = new OggVorbisDecoderWebWorker();
     await decoder.ready;
