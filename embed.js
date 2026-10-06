@@ -1,8 +1,12 @@
 import { canvasRenderer } from "./src/canvas-renderer.js";
 import { drawRifffSplat } from "./src/rifff-splat.js";
-import { fetchRifffData } from "./src/loader.js";
-import { RifffPlayer } from "./src/rifff-player.js";
-import { getLayerColours, getRifffWaveform, getUserImageUrl } from "./src/rifff.js";
+import {
+    fetchRifffData,
+    RifffPlayer,
+    getLayerColours,
+    getRifffWaveform,
+    getUserImageUrl,
+} from "./src/index.js";
 import { makeToggleButton } from "./src/ui-helpers.js";
 
 const audioContext = new AudioContext();
