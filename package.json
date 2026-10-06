@@ -9,7 +9,8 @@
     ".": "./src/index.js",
     "./looper": "./src/looper-node.js",
     "./stems": "./src/stems-player.js",
-    "./rifff": "./src/rifff-player.js"
+    "./rifff": "./src/rifff-entry.js",
+    "./loader": "./src/loader.js"
   },
   "files": [
     "src",
@@ -17,7 +18,7 @@
     "README.md"
   ],
   "scripts": {
-    "check": "node --check src/index.js && node --check src/looper-node.js && node --check src/stems-player.js && node --check src/rifff-player.js && node --check src/loader.js && node --check src/rifff.js"
+    "check": "node --check src/index.js && node --check src/rifff-entry.js && node --check src/looper-node.js && node --check src/stems-player.js && node --check src/rifff-player.js && node --check src/loader.js && node --check src/rifff.js"
   },
   "keywords": [
     "web-audio",

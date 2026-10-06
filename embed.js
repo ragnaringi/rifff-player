@@ -6,7 +6,7 @@ import {
     getLayerColours,
     getRifffWaveform,
     getUserImageUrl,
-} from "./src/index.js";
+} from "./src/rifff-entry.js";
 import { makeToggleButton } from "./src/ui-helpers.js";
 
 const audioContext = new AudioContext();

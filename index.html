@@ -126,21 +126,25 @@
         View on GitHub
     </a>
 
-
     <script>
         const githubUser = 'ragnaringi';
         const githubRepo = 'rifff-player';
 
         const isGitHubPages = location.hostname === `${githubUser}.github.io` || location.hostname.endsWith('.github.io');
 
-        const basePath = isGitHubPages
-            ? `https://${githubUser}.github.io/${githubRepo}`
-            : '.';
+        const baseUrl = isGitHubPages
+            ? `https://${githubUser}.github.io/${githubRepo}/`
+            : window.location.href;
 
         const rifffId = Math.random() < 0.5 ? "41510a10435311ed8a10405df04d7516" : "3052b5302ef411f0b5306449625d4a9f";
-        const rifffUrl = `https://api.endlesss.fm/api/v3/feed/shared_rifff/${rifffId}`;
 
-        const defaultSrc = `${basePath}/embed.html?rifffId=${rifffId}&showLayers=true&showSettings=true`;
+        const embedPath = isGitHubPages ? "embed.html" : "embed";
+        const embedUrl = new URL(embedPath, baseUrl);
+        embedUrl.searchParams.set("rifffId", rifffId);
+        embedUrl.searchParams.set("showLayers", "true");
+        embedUrl.searchParams.set("showSettings", "true");
+
+        const defaultSrc = embedUrl.toString();
 
         const textarea = document.getElementById('iframeHtml');
         const button = document.getElementById('loadBtn');

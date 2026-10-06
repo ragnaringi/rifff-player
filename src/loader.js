@@ -64,15 +64,25 @@ export const loadAudioBuffers = (context, filePaths) =>
     Promise.all(filePaths.map((filePath) => loadAudioBuffer(context, filePath)));
 
 export const fetchRifffData = (rifffUrl) => {
+    if (!rifffUrl) {
+        return Promise.reject(new Error("Cannot fetch Rifff data without a rifffUrl."));
+    }
+
     const apiUrl = "https://faas-lon1-917a94a7.doserverless.co/api/v1/web/fn-47de0ed6-06e1-4a41-9d1c-f70b0d7ad08e/rifff-player/get-rifff?url=";
-    return fetch(apiUrl + rifffUrl)
-        .then(response => response.json())
+
+    return fetch(apiUrl + encodeURIComponent(rifffUrl))
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error(`Failed to fetch Rifff data: ${response.status} ${response.statusText}`);
+            }
+
+            return response.json();
+        })
         .then(response => {
             // Check if 'data' exists and is an array, then access the first element
             const result = Array.isArray(response.data) && response.data.length > 0
                 ? response.data[0] // First element of the array if 'data' exists
                 : response; // If 'data' doesn't exist, return the raw object
             return result;
-        })
-        .catch(console.error);
+        });
 }
